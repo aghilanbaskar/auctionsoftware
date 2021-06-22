@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Projects</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+<table id="projects" class="table">
+  <caption>Projects</caption>
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Project Title</th>
+      <th scope="col">Username</th>
+      <th scope="col">Categories</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+  
+  <div class="row">
+    <div class="col-sm-6">
+        <ul id="pagination" class="pagination">
+        </ul>
+    </div>
+    <div class="col-sm-6">
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Sort
+            <span class="caret"></span></button>
+            <ul id="sort" class="dropdown-menu">
+              <li><a href="#" data-sort="recent">Recent Project</a></li>
+              <li><a href="#" data-sort="category">Category Name</a></li>
+              <li><a href="#" data-sort="username">Username</a></li>
+              <li><a href="#" data-sort="title">Project Title</a></li>
+            </ul>
+          </div>
+    </div>
+  </div>
+</div>
+
+</body>
+<script>
+    $(document).ready(function() {
+        let sort = '';
+        let offset = 0;
+        const getData = (offset, sort) =>{
+            $.ajax({
+                    type: "GET",
+                    url: `/project/getAll`,
+                    data: {
+                        offset,
+                        sort
+                    },
+                    dataType: 'json',
+                    success: function(projects)
+                    {
+                        let row = '';
+                        let pagination = '';
+                        let id = offset+1;
+                        projects.data.forEach(project => {
+                            row+=`
+                            <tr>
+                                <th scope="row">${id++}</th>
+                                <td>${project.project_title}</td>
+                                <td>${project.username}</td>
+                                <td>${project.category_name}</td>
+                            </tr>
+                            `
+                        });
+                        $('#projects > tbody').html(row);
+                        for(let i=0;i<Math.ceil(projects.total/2);i++){
+                            pagination+= `<li ${(i == offset/2) ? `class="active"`:`` }><a href="#">${i+1}</a></li>`;
+                        }
+                        $('#pagination').html(pagination);
+                    },
+                    error: function(response){
+                        alert('something went wrong in server. try again');
+                    }
+            });
+        };
+        getData(offset, sort);
+
+        $(document).on("click", "#pagination > li > a", function () {
+            offset = ($(this).html()-1)*2;
+            getData(offset, sort);
+        });
+        $(document).on("click", "#sort > li > a", function () {
+            offset = 0;
+            sort = $(this).data('sort');
+            getData(offset, sort);
+        });
+    });
+</script>
+</html>

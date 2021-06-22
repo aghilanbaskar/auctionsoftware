@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>AUTH - LOGIN</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container mt-5">
+  <h2>LOGIN</h2>
+    <div class="form-group">
+      <label for="username">username:</label>
+      <input type="text" class="form-control" id="username" placeholder="Enter username" maxlength="64">
+    </div>
+    <div class="form-group">
+      <label for="password">Password:</label>
+      <input type="password" class="form-control" id="password" placeholder="Enter password" maxlength="64">
+    </div>
+    <button id="login" type="button" class="btn btn-primary">Submit</button>
+</div>
+</body>
+<script>
+  $(document).ready(function() {
+    $('#login').click(function() {
+      if (!$('#username').val() || !$('#password').val()) {
+        alert('Please Enter credential and press submit');
+        return;
+      }
+
+      $.ajax({
+    			 type: "GET",
+    			 url: `/auth/login/${$('#username').val()}/${$('#password').val()}`,
+           dataType: 'json',
+    			 success: function(data)
+    			 {
+            alert(data.message);
+    			 },
+           error: function(response){
+            if(response.responseJSON.message){
+              alert(response.responseJSON.message);
+              return;
+            }
+            alert('something went wrong in server. try again');
+           }
+    		});
+    });
+  });
+</script>
+</html>
